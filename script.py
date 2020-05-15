@@ -21,9 +21,11 @@ chapterEnd = int(input("numéro du dernier chapitre que tu veux (met le meme num
 print("L'opération peut prendre quelques minutes (surtout si tu veux bcp de pdf).")
 
 urlStarts = ["https://www.lelscan-vf.com/manga/{}/{}",
+             "https://www.lelscan-vf.com/manga/{}/{}",
              "https://www.lelscan-vf.com/manga/{}/{}"]
 urlImagess = ["https://www.lelscan-vf.com/uploads/manga/{}/chapters/{}vf/{:0>3d}.",
-              "https://www.lelscan-vf.com/uploads/manga/{}/chapters/{}/{:0>2d}."]
+              "https://www.lelscan-vf.com/uploads/manga/{}/chapters/{}/{:0>2d}.",
+              "https://www.lelscan-vf.com/uploads/manga/{}/chapters/{}/{:0>3d}."]
 for chapter in range(chapterStart, chapterEnd+1):
 
     for i in range(len(urlStarts)):
@@ -60,7 +62,6 @@ for chapter in range(chapterStart, chapterEnd+1):
                 chapPart = url[:pageSlash - len(url)]
                 chapSlash = chapPart.rfind("/")
                 chapPart = chapPart[chapSlash - len(chapPart) + 1:]
-                chapPart = chapPart.replace("4", "1")
                 urlImages = url.replace(pagePart, "{}" + pagePart[pagePart.find("."):]).replace(chapPart, "{}")
                 test = requests.get(urlImages.format(chapPart, pagePartNew))
                 if res.status_code == 200:
