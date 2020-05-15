@@ -1,5 +1,6 @@
 import requests, codecs, base64, os, img2pdf
 from bs4 import BeautifulSoup
+from PIL import Image
 
 def extention(urlImage, name, chapter, page):
     url = urlImage.format(name.replace(" ", "-").lower(), chapter, page)
@@ -100,9 +101,21 @@ for chapter in range(chapterStart, chapterEnd+1):
         with open("./img/img{}.png".format(before + str(i+1)), "wb") as f:
             f.write(base64.decodebytes(bytes(b64, 'utf-8')))
             f.close()
+    try:
+        with open("./pdfs/" + name.replace(" ", "-") + str(chapter) + ".pdf", "wb") as fh:
+            fh.write(img2pdf.convert(["./img/" + i for i in os.listdir('./img')]))
+    except img2pdf.AlphaChannelError:
+        for img in os.listdir('./img'):
+            png = Image.open("./img/" + img)
+            png.load()
 
-    with open("./pdfs/" + name.replace(" ", "-") + str(chapter) + ".pdf", "wb") as fh:
-        fh.write(img2pdf.convert(["./img/" + i for i in os.listdir('./img')]))
+            bg = Image.new("RGB", png.size, (255, 255, 255))
+            bg.paste(png, mask=png.convert('RGBA').split()[-1])
+
+            bg.save("./img/" + img.split(".")[0] + '.jpg', 'JPEG', quality=80)
+            os.remove("./img/" + img)
+        with open("./pdfs/" + name.replace(" ", "-") + str(chapter) + ".pdf", "wb") as fh:
+            fh.write(img2pdf.convert(["./img/" + i for i in os.listdir('./img')]))
 
     for i in os.listdir('./img'):
         os.remove("./img/" + i)
