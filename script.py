@@ -39,7 +39,7 @@ for chapter in range(chapterStart, chapterEnd+1):
             break
 
     if not ext:
-        urlStarts = ["https://www.lelscan-vf.com/manga/{}/{}", "https://scan-fr.co/manga/{}/{}"]
+        urlStarts = ["https://scan-fr.co/manga/{}/{}", "https://www.lelscan-vf.com/manga/{}/{}"]
         for urlStart in urlStarts:
             wolapage = 3
             res = requests.get(urlStart.format(name.replace(" ", "-").lower(), chapter) + "/4", stream=True)
@@ -51,7 +51,10 @@ for chapter in range(chapterStart, chapterEnd+1):
             soup = BeautifulSoup(res.text, "lxml")
 
             if not ext:
-                url = soup.find("img", {"class": "scan-page"})["src"][1:-1]
+                try:
+                    url = soup.find("img", {"class": "scan-page"})["src"][1:-1]
+                except: # le manga n'existe pas je crois
+                    continue
                 url = url.replace(" ", "%20")
                 chap = url.find(str(chapter))
                 page = url.rfind("1")
